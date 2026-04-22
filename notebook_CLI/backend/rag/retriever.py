@@ -1,3 +1,4 @@
+import os
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
@@ -16,7 +17,9 @@ def _init_qdrant():
     """Connect to Qdrant and create collection if it doesn't exist."""
     global _client, _vectorstore, _retriever
     if _client is None:
-        _client = QdrantClient(host="localhost", port=6333)
+        qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        qdrant_api_key = os.getenv("QDRANT_API_KEY")
+        _client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
 
         # Auto-create collection if missing
         existing = [c.name for c in _client.get_collections().collections]
